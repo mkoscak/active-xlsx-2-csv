@@ -23,15 +23,17 @@ namespace ActiveConverter
         internal List<DataItem> data;
 
         internal string storeDir;
+        internal string CategoryIds;
 
         /// <summary>
         /// Konstruktor
         /// </summary>
         /// <param name="sheet"></param>
-        public Model(ExcelWorksheet sheet)
+        public Model(ExcelWorksheet sheet, string catIds)
         {
             this.sheet = sheet;
             this.data = new List<DataItem>();
+            this.CategoryIds = catIds;
         }
 
         /// <summary>
@@ -263,7 +265,7 @@ namespace ActiveConverter
             sb.Append("\"\",");//description 
             sb.Append("\"\",");//short_description 
             sb.Append("\"1\",");//enable_googlecheckout  
-            sb.Append("\"\",");//category_ids 
+            sb.Append("\""+CategoryIds+"\",");//category_ids 
             sb.Append("\"1\",");//weight
             sb.Append("\"" + dataItem.Rrp + "\",");//price
             sb.Append("\"" + dataItem.Rrp + "\",");//special_price 
@@ -280,7 +282,7 @@ namespace ActiveConverter
             sb.Append(compl);//small_image 
             sb.Append(compl);//image 
             sb.Append(compl);//media_gallery 
-            sb.Append("\"0\",");//media_gallery_reset 
+            sb.Append("\"0\"");//media_gallery_reset 
 
             return sb.ToString();
         }

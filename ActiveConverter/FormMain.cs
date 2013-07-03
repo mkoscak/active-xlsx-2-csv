@@ -12,7 +12,7 @@ namespace ActiveConverter
             InitializeComponent();
         }
 
-        private void btnTest_Click(object sender, EventArgs e)
+        private void btnProcess_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.DefaultExt = "xlsx";
@@ -27,7 +27,7 @@ namespace ActiveConverter
             FileInfo fi = new FileInfo(ofd.FileName);
             ExcelPackage ep = new ExcelPackage(fi);
 
-            Model myModel = new Model(ep.Workbook.Worksheets[1]);
+            Model myModel = new Model(ep.Workbook.Worksheets[1], txtCatIds.Text ?? string.Empty);
 
             if (myModel.FindHeaderIndex())
             {
