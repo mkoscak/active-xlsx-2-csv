@@ -7,9 +7,14 @@ namespace ActiveConverter
 {
     public partial class frmMain : Form
     {
+        string[] Sources = { "Adidas SLVR", 
+                               "Room31 WholeSale" };
+
         public frmMain()
         {
             InitializeComponent();
+
+            cbExcelType.DataSource = Sources;
         }
 
         private void btnProcess_Click(object sender, EventArgs e)
@@ -24,7 +29,16 @@ namespace ActiveConverter
             if (res != DialogResult.OK)
                 return;
 
-            FileInfo fi = new FileInfo(ofd.FileName);
+            this.Cursor = Cursors.WaitCursor;
+            Process(ofd.FileName);
+            this.Cursor = Cursors.Default;
+
+            MessageBox.Show(this, "Spracovane!", "Ok", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        void Process(string fileName)
+        {
+            FileInfo fi = new FileInfo(fileName);
             ExcelPackage ep = new ExcelPackage(fi);
 
             Model myModel = new Model(ep.Workbook.Worksheets[1], txtCatIds.Text ?? string.Empty);
@@ -35,11 +49,25 @@ namespace ActiveConverter
                 {
                     while (myModel.FindFirstCode())
                     {
-                        // Create data item and add it to list of outputs
-                        if (!myModel.ProcessNextDataItem())
+                        // ADIDAS SLVR
+                        if (cbExcelType.SelectedIndex == 0)
                         {
-                            MessageBox.Show(this, "Nepodarilo sa nacitat polozku (riadok " + myModel.actualRowIndex + ")!", "Chyba", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            return;
+                            // Create data item and add it to list of outputs
+                            if (!myModel.ProcessNextDataItemAdidasSLVR())
+                            {
+                                MessageBox.Show(this, "Nepodarilo sa nacitat polozku (riadok " + myModel.actualRowIndex + ")!", "Chyba", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                return;
+                            }
+                        }
+                        // ROOM31 WHOLESALE
+                        else if (cbExcelType.SelectedIndex == 1)
+                        {
+                            // Create data item and add it to list of outputs
+                            if (!myModel.ProcessNextDataItemRoom31())
+                            {
+                                MessageBox.Show(this, "Nepodarilo sa nacitat polozku (riadok " + myModel.actualRowIndex + ")!", "Chyba", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                return;
+                            }
                         }
                     }
                 }
@@ -60,8 +88,6 @@ namespace ActiveConverter
                 MessageBox.Show(this, "Nepodarilo sa najst hlavickovy riadok (aspon 5 zadanych hodnot v stlpcoch za sebou)!", "Chyba", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-
-            MessageBox.Show(this, "Spracovane!", "Ok", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }
