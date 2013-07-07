@@ -162,7 +162,7 @@ namespace ActiveConverter
         /// Nacita dalsi produkt
         /// </summary>
         /// <returns></returns>
-        internal bool ProcessNextDataItem()
+        internal bool ProcessNextDataItemAdidasSLVR ()
         {
             DataItem New = new DataItem();
             string code = string.Empty;
@@ -204,6 +204,95 @@ namespace ActiveConverter
             data.Add(New);
 
             return true;
+        }
+
+        /// <summary>
+        /// Nacita dalsi produkt
+        /// </summary>
+        /// <returns></returns>
+        internal bool ProcessNextDataItemRoom31()
+        {
+            string code = string.Empty;
+
+            // actualRowIndex je na prvom zazname.. obrazok by mal tento prekryvat
+            // 7.7.2013 - obrazky pre room31 sa zatial neriesia
+            /*object pic = FindPictureForActual();
+            if (pic != null)
+                New.Picture = pic;*/
+
+            do
+            {
+                code = (sheet.Cells[actualRowIndex, codesColIndex].Value ?? string.Empty).ToString();
+                if (!string.IsNullOrEmpty(code))
+                {
+                    DataItem New = new DataItem();
+
+                    // kod polozky
+                    New.Codes.Add(code);
+
+                    // popis - nazov a velkost
+                    var desc = (sheet.Cells[actualRowIndex, descColIndex].Value ?? string.Empty).ToString();
+                    if (string.IsNullOrEmpty(New.Description))
+                        New.Description = desc;
+                    
+                    // parsovanie velkosti
+                    SetSizesRoom31(New.Sizes);
+
+                    // rrp
+                    var rrp = (sheet.Cells[actualRowIndex, rrpColIndex].Value ?? string.Empty).ToString();
+                    if (string.IsNullOrEmpty(New.Rrp))
+                        New.Rrp = rrp;
+
+                    // supp
+                    var supp = (sheet.Cells[actualRowIndex, suppColIndex].Value ?? string.Empty).ToString();
+                    if (string.IsNullOrEmpty(New.Supp))
+                        New.Supp = supp;
+
+                    // presun na dalasi riadok
+                    actualRowIndex++;
+
+                    data.Add(New);
+                }
+            } while (!string.IsNullOrEmpty(code));
+
+
+            return true;
+        }
+
+        /// <summary>
+        /// Nacita zoznam velkosti pre typ room31
+        /// </summary>
+        /// <param name="list"></param>
+        private void SetSizesRoom31(List<string> sizes)
+        {
+            int col = 1;
+            bool found = false;
+            
+            do
+            {
+                found = false;
+                var val = (sheet.Cells[actualRowIndex, col].Value ?? string.Empty).ToString();
+                
+                if (val.ToLower().Contains("size"))
+                    found = true;
+                else
+                    col++;
+
+            } while (!found || col > 100);
+
+            while (found)
+            {
+                col++;
+                var val = (sheet.Cells[actualRowIndex, col].Value ?? string.Empty).ToString();
+                if (string.IsNullOrEmpty(val))
+                    found = false;
+                else
+                {
+                    var items = val.Split('\n');
+                    if (items.Length > 0)
+                        sizes.Add(items[0]);
+                }
+            }
         }
 
         private object FindPictureForActual()
