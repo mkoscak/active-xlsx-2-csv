@@ -71,6 +71,27 @@ namespace ActiveConverter
             return false;
         }
 
+        bool IsPicture(string val)
+        {
+            return val.Contains("picture") || val.Contains("image");
+        }
+        bool IsSKU(string val)
+        {
+            return val.Contains("code") || val.Contains("sku");
+        }
+        bool IsSupplier(string val)
+        {
+            return val.Contains("supp") || val.Contains("brand");
+        }
+        bool IsName(string val)
+        {
+            return val.Contains("description") || val.Contains("name");
+        }
+        bool IsRRP(string val)
+        {
+            return val.Contains("rrp");
+        }
+
         /// <summary>
         /// Najde indexy relevantnych stlpcov
         /// </summary>
@@ -89,15 +110,15 @@ namespace ActiveConverter
 
                 if (!string.IsNullOrEmpty(val))
                 {
-                    if (val.Contains("picture") && picturesColIndex == 0)
+                    if (IsPicture(val) && picturesColIndex == 0)
                         picturesColIndex = col;
-                    else if (val.Contains("code") && codesColIndex == 0)
+                    else if (IsSKU(val) && codesColIndex == 0)
                         codesColIndex = col;
-                    else if (val.Contains("description") && descColIndex == 0)
+                    else if (IsName(val) && descColIndex == 0)
                         descColIndex = col;
-                    else if (val.Contains("rrp") && rrpColIndex == 0)
+                    else if (IsRRP(val) && rrpColIndex == 0)
                         rrpColIndex = col;
-                    else if (val.Contains("supp") && suppColIndex == 0)
+                    else if (IsSupplier(val) && suppColIndex == 0)
                         suppColIndex = col;
                     
                     col++;
