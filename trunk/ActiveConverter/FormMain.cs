@@ -7,8 +7,10 @@ namespace ActiveConverter
 {
     public partial class frmMain : Form
     {
-        string[] Sources = { "Adidas SLVR", 
-                               "Room31 WholeSale" };
+        string[] Sources = { "Adidas", 
+                              "Room31 WholeSale",
+                               "Speedo",
+                                "Puma"};
 
         public frmMain()
         {
@@ -30,13 +32,14 @@ namespace ActiveConverter
                 return;
 
             this.Cursor = Cursors.WaitCursor;
-            Process(ofd.FileName);
+            var ret = Process(ofd.FileName);
             this.Cursor = Cursors.Default;
 
-            MessageBox.Show(this, "Spracovane!", "Ok", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            if (ret)
+                MessageBox.Show(this, "Spracovane!", "Ok", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-        void Process(string fileName)
+        bool Process(string fileName)
         {
             FileInfo fi = new FileInfo(fileName);
             ExcelPackage ep = new ExcelPackage(fi);
@@ -49,14 +52,14 @@ namespace ActiveConverter
                 {
                     while (myModel.FindFirstCode())
                     {
-                        // ADIDAS SLVR
-                        if (cbExcelType.SelectedIndex == 0)
+                        // ADIDAS || SPEEDO || PUMA
+                        if (cbExcelType.SelectedIndex == 0 || cbExcelType.SelectedIndex == 2 || cbExcelType.SelectedIndex == 3)
                         {
                             // Create data item and add it to list of outputs
                             if (!myModel.ProcessNextDataItemAdidasSLVR())
                             {
                                 MessageBox.Show(this, "Nepodarilo sa nacitat polozku (riadok " + myModel.actualRowIndex + ")!", "Chyba", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                return;
+                                return false;
                             }
                         }
                         // ROOM31 WHOLESALE
@@ -66,7 +69,7 @@ namespace ActiveConverter
                             if (!myModel.ProcessNextDataItemRoom31())
                             {
                                 MessageBox.Show(this, "Nepodarilo sa nacitat polozku (riadok " + myModel.actualRowIndex + ")!", "Chyba", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                return;
+                                return false;
                             }
                         }
                     }
@@ -74,20 +77,22 @@ namespace ActiveConverter
                 else
                 {
                     MessageBox.Show(this, "Nepodarilo sa najst nazvy hlaviciek (pictures, code, description, rrp a supp)!", "Chyba", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
+                    return false;
                 }
 
                 if (!myModel.StoreData(Application.StartupPath + @"\exported"))
                 {
                     MessageBox.Show(this, "Nepodarilo sa ulozit vystupne data!", "Chyba", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
+                    return false;
                 }
             }
             else
             {
                 MessageBox.Show(this, "Nepodarilo sa najst hlavickovy riadok (aspon 5 zadanych hodnot v stlpcoch za sebou)!", "Chyba", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
+                return false;
             }
+
+            return true;
         }
     }
 }

@@ -47,15 +47,27 @@ namespace ActiveConverter
             while (rowIndex < 100)
             {
                 var row = sheet.Row(rowIndex);
+                int found = 0;
+                int blankCells = 0;
 
                 bool ok = true;
-                for (int i = 1; i <= FILLED_CELLS_IN_ROW; i++)
+                for (int i = 1; i <= 100 && found != FILLED_CELLS_IN_ROW; i++)
                 {
                     var val = (sheet.Cells[rowIndex, i].Value ?? string.Empty).ToString();
                     if (string.IsNullOrEmpty(val))
                     {
-                        ok = false;
-                        break;
+                        if (blankCells > 0)
+                        {
+                            ok = false;
+                            break;
+                        }
+                        else
+                            blankCells++;
+                    }
+                    else
+                    {
+                        blankCells = 0;
+                        found++;
                     }
                 }
 
@@ -73,7 +85,7 @@ namespace ActiveConverter
 
         bool IsPicture(string val)
         {
-            return val.Contains("picture") || val.Contains("image");
+            return val.Contains("picture") || val.Contains("image") || val.Contains("asn");
         }
         bool IsSKU(string val)
         {
@@ -89,7 +101,7 @@ namespace ActiveConverter
         }
         bool IsRRP(string val)
         {
-            return val.Contains("rrp");
+            return val.Contains("rrp") || val.Contains("price");
         }
 
         /// <summary>
@@ -120,10 +132,9 @@ namespace ActiveConverter
                         rrpColIndex = col;
                     else if (IsSupplier(val) && suppColIndex == 0)
                         suppColIndex = col;
-                    
-                    col++;
                 }
-            } while (!string.IsNullOrEmpty(val));
+                col++;
+            } while (col < 100);
 
             return picturesColIndex != 0 &&
                 codesColIndex != 0 &&
@@ -406,7 +417,15 @@ namespace ActiveConverter
 
             var pic = dataItem.Picture as ExcelPicture;
             var name = pic.Name + "." + pic.ImageFormat;
-            pic.Image.Save(storeDir + @"\" + name);
+            var complName = storeDir + @"\" + name;
+
+            while (File.Exists(complName))
+            {
+                name = name.Replace("." + pic.ImageFormat, "1." + pic.ImageFormat); // prida k nazvu suboru "1"..
+                complName = storeDir + @"\" + name;
+            }
+
+            pic.Image.Save(complName);
 
             return name;
         }
