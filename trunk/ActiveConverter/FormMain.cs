@@ -80,7 +80,11 @@ namespace ActiveConverter
                     return false;
                 }
 
-                if (!myModel.StoreData(Application.StartupPath + @"\exported"))
+                FrmSetCatIds frm = new FrmSetCatIds();
+                frm.SetListData(myModel.data);
+                var frmRet = frm.ShowDialog(this);
+
+                if (!myModel.StoreData(Application.StartupPath + @"\exported", frmRet == DialogResult.OK))
                 {
                     MessageBox.Show(this, "Nepodarilo sa ulozit vystupne data!", "Chyba", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return false;

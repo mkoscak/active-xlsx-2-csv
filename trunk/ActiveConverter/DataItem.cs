@@ -5,7 +5,7 @@ using System.Text;
 
 namespace ActiveConverter
 {
-    class DataItem
+    public class DataItem
     {
         public DataItem()
         {
@@ -17,6 +17,7 @@ namespace ActiveConverter
         public string Description { get; set; }
         public string Rrp { get; set; }
         public string Supp { get; set; }
+        public string CatId { get; set; }
 
         public List<string> Sizes { get; set; }
 

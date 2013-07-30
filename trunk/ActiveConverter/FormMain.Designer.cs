@@ -97,7 +97,7 @@
             this.Controls.Add(this.btnTest);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "frmMain";
-            this.Text = "Active Converter - v0.4";
+            this.Text = "Active Converter - v0.5";
             this.ResumeLayout(false);
             this.PerformLayout();
 

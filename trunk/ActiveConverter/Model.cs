@@ -346,7 +346,7 @@ namespace ActiveConverter
         /// Ulozenie nacitanych dat do CSV a obrazky zvlast
         /// </summary>
         /// <param name="p"></param>
-        internal bool StoreData(string dir)
+        internal bool StoreData(string dir, bool useinternalcatids)
         {
             if (string.IsNullOrEmpty(dir))
                 return false;
@@ -361,7 +361,7 @@ namespace ActiveConverter
             sb.AppendLine(GetCSVHeader());
             for (int i = 0; i < data.Count; i++)
             {
-                sb.AppendLine(GetNextLine(data[i]));
+                sb.AppendLine(GetNextLine(data[i], useinternalcatids));
             }
 
             File.WriteAllText(storeDir + @"\data.csv", sb.ToString());
@@ -369,7 +369,7 @@ namespace ActiveConverter
             return true;
         }
 
-        private string GetNextLine(DataItem dataItem)
+        private string GetNextLine(DataItem dataItem, bool useinternalcatids)
         {
             StringBuilder sb = new StringBuilder();
 
@@ -386,7 +386,7 @@ namespace ActiveConverter
             sb.Append("\"\",");//description 
             sb.Append("\"\",");//short_description 
             sb.Append("\"1\",");//enable_googlecheckout  
-            sb.Append("\""+CategoryIds+"\",");//category_ids 
+            sb.Append("\"" + (useinternalcatids ? dataItem.CatId : CategoryIds) + "\",");//category_ids 
             sb.Append("\"1\",");//weight
             sb.Append("\"" + dataItem.Rrp + "\",");//price
             sb.Append("\"" + dataItem.Rrp + "\",");//special_price 
